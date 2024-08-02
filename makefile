@@ -20,9 +20,8 @@ uninstall-deps:
 	rm -rf lib/portaudio
 
 .PHONY: uninstall-deps
+
 clean:
 	rm -f $(EXEC)
 
-
-	
 .PHONY: clean
