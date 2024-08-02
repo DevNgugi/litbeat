@@ -1,9 +1,12 @@
 EXEC = litbeat
 
-CLIB = -I./lib/portaudio/include ./lib/portaudio/lib ./libs/libportaudio.a -lrt -lasound -ljack -pthread
+CLIB = -I./lib/portaudio/include ./lib/portaudio/lib/.libs/libportaudio.a -lrt -lasound -ljack -pthread
 
 $(EXEC): main.cpp
 	g++ -o $@ $^ $(CLIB)
+
+dev: $(EXEC)
+	./$(EXEC) 2>/dev/null
 
 install-deps:
 	mkdir -p lib 
@@ -19,5 +22,7 @@ uninstall-deps:
 .PHONY: uninstall-deps
 clean:
 	rm -f $(EXEC)
+
+
 	
 .PHONY: clean

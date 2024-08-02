@@ -15,3 +15,17 @@ make install-deps #from our custom make file
 
 ```
 
+
+**Running dev**
+
+```
+make dev
+```
+
+**Building**
+
+```
+make litbeat
+
+```
+
