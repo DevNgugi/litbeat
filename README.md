@@ -4,6 +4,7 @@ An open source Audio manipulation Program in C++
 
 # Attempt 1
 <!-- https://youtu.be/jpsJCji71Ec -->
+<!-- https://youtu.be/yt7i4zPbVDs -->
 
 Install dependencies on linux
 
