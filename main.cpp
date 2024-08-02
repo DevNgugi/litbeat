@@ -29,8 +29,12 @@ int main(){
 
     for (int i = 0; i < numDevices; ++i) {
         const PaDeviceInfo* deviceInfo = Pa_GetDeviceInfo(i);
-        if (deviceInfo) {
+         if (deviceInfo) {
             std::cout << "Device name: " << deviceInfo->name << std::endl;
+            std::cout << "Max input channels: " << deviceInfo->maxInputChannels << std::endl;
+            std::cout << "Max output channels: " << deviceInfo->maxOutputChannels << std::endl;
+            std::cout << "Default sample rate: " << deviceInfo->defaultSampleRate << std::endl;
+            std::cout << std::endl;
         }
     }
 
