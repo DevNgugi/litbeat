@@ -2,79 +2,26 @@
 #include <portaudio.h>
 #include <stdio.h>
 #include <iostream>
-#include <cmath> // Include for std::abs
+#include <cmath>
 #include <cstring>
+
 #define SAMPLE_RATE 44100
-#define FRAMES_PER_BUFFER 512 // the size of the buffer (captures the amplitude of the waveform based on the sample rate)
+#define FRAMES_PER_BUFFER 512
 
 using namespace std;
 
-static void checkErr(PaError err){
-    if (err != paNoError){
+static void checkErr(PaError err) {
+    if (err != paNoError) {
         printf("PortAudio error: %s\n", Pa_GetErrorText(err));
         exit(EXIT_FAILURE);
     }
 }
 
-static inline float max(float a, float b){
-    return a > b ? a : b;
-}
-
-static int testCallback(
-    const void* inputBuffer, void* outputBuffer, unsigned long framesPerBuffer,
-    const PaStreamCallbackTimeInfo* timeinfo, PaStreamCallbackFlags statusFlags, void* userData)
-{
-    float* in = (float*)inputBuffer;
-    (void)outputBuffer;
-
-    int dispSize = 100;
-    cout << "\r";
-
-    float vol_l = 0;
-    float vol_r = 0;
-
-    for (unsigned long i = 0; i < framesPerBuffer * 2; i+=2)
-    {
-        vol_l = max(vol_l, std::abs(in[i]));
-        vol_r = max(vol_r, std::abs(in[i+1]));
-    }
-
-    for (int i = 0; i < dispSize; i++)
-    {
-        float barProportion = i / (float)dispSize;
-
-        if(barProportion <= vol_l && barProportion <= vol_r){
-            cout << ("█");
-        }
-        else if(barProportion <= vol_l){
-            cout << ("▀");
-        }
-        else if (barProportion <= vol_r)
-        {
-            cout << ("▄");
-        }
-        else{
-            cout << " ";
-        }
-    }
-    
-    fflush(stdout);
-
-    return 0;
-}
-
-int main(){
-    PaError err = Pa_Initialize();
-    if (err != paNoError) {
-        std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
-        return 1;
-    }
-
+static void listDevices() {
     int numDevices = Pa_GetDeviceCount();
     if (numDevices < 0) {
         std::cerr << "PortAudio error: " << Pa_GetErrorText(numDevices) << std::endl;
-        Pa_Terminate();
-        return 1;
+        return;
     }
 
     for (int i = 0; i < numDevices; ++i) {
@@ -88,8 +35,58 @@ int main(){
             std::cout << std::endl;
         }
     }
+}
 
-    // choose device input by number
+static inline float max(float a, float b) {
+    return a > b ? a : b;
+}
+
+static int audioCallback(
+    const void* inputBuffer, void* outputBuffer, unsigned long framesPerBuffer,
+    const PaStreamCallbackTimeInfo* timeinfo, PaStreamCallbackFlags statusFlags, void* userData
+) {
+    float* in = (float*)inputBuffer;
+    (void)outputBuffer;
+
+    int dispSize = 100;
+    cout << "\r";
+
+    float vol_l = 0;
+    float vol_r = 0;
+
+    for (unsigned long i = 0; i < framesPerBuffer * 2; i += 2) {
+        vol_l = max(vol_l, std::abs(in[i]));
+        vol_r = max(vol_r, std::abs(in[i + 1]));
+    }
+
+    for (int i = 0; i < dispSize; i++) {
+        float barProportion = i / (float)dispSize;
+
+        if (barProportion <= vol_l && barProportion <= vol_r) {
+            cout << ("█");
+        }
+        else if (barProportion <= vol_l) {
+            cout << ("▀");
+        }
+        else if (barProportion <= vol_r) {
+            cout << ("▄");
+        }
+        else {
+            cout << " ";
+        }
+    }
+
+    fflush(stdout);
+
+    return 0;
+}
+
+int main() {
+    PaError err = Pa_Initialize();
+    checkErr(err);
+
+    listDevices();
+
     int device;
     cout << "Enter Device Number: " << endl;
     std::cin >> device;
@@ -98,14 +95,14 @@ int main(){
     PaStreamParameters outputParameters;
 
     memset(&inputParameters, 0, sizeof(inputParameters));
-    inputParameters.channelCount = 2; // work with stereo input 1,2
+    inputParameters.channelCount = 2;
     inputParameters.device = device;
     inputParameters.hostApiSpecificStreamInfo = NULL;
     inputParameters.sampleFormat = paFloat32;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency;
 
     memset(&outputParameters, 0, sizeof(outputParameters));
-    outputParameters.channelCount = 2; // work with stereo input 1,2
+    outputParameters.channelCount = 2;
     outputParameters.device = device;
     outputParameters.hostApiSpecificStreamInfo = NULL;
     outputParameters.sampleFormat = paFloat32;
@@ -120,16 +117,15 @@ int main(){
         SAMPLE_RATE,
         FRAMES_PER_BUFFER,
         paNoFlag,
-        testCallback,
+        audioCallback,
         NULL
     );
-
     checkErr(err);
 
     err = Pa_StartStream(stream);
     checkErr(err);
 
-    Pa_Sleep(10*1000);
+    Pa_Sleep(10 * 1000);
 
     err = Pa_StopStream(stream);
     checkErr(err);
@@ -138,10 +134,7 @@ int main(){
     checkErr(err);
 
     err = Pa_Terminate();
-    if (err != paNoError) {
-        std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
-        return 1;
-    }
+    checkErr(err);
 
     return EXIT_SUCCESS;
 }
