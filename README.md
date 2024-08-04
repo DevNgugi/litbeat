@@ -49,3 +49,13 @@ make dev
 make litbeat
 
 ```
+
+MORE DEPENDENCIES:
+
+```
+1. Curl (for making API requests)
+
+sudo apt-get install libcurl4-openssl-dev
+
+
+```

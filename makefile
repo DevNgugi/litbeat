@@ -1,20 +1,23 @@
 CXX = g++
 CXXFLAGS = `wx-config --cxxflags`
 LDFLAGS = `wx-config --libs`
-CLIB = -I./lib/portaudio/include ./lib/portaudio/lib/.libs/libportaudio.a -lrt -lasound -ljack -pthread
+CLIB = -I./lib/portaudio/include ./lib/portaudio/lib/.libs/libportaudio.a -lrt -lasound -ljack -pthread -lcurl
 
-SRC = src/main.cpp src/MyApp.cpp src/MyFrame.cpp src/AudioHandler.cpp
+SRC = src/main.cpp src/MyApp.cpp src/MyFrame.cpp src/AudioHandler.cpp src/HTTPClient.cpp
 
 INCLUDE = -I./include
 
 TARGET = build/litbeat
 
 $(TARGET): $(SRC)
+	
 	@mkdir -p build
+	rm -f /$(TARGET)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -o $(TARGET) $(SRC) $(LDFLAGS) $(CLIB)
 
 dev: $(TARGET)
 	@mkdir -p build
+	rm -f /$(TARGET)
 	./$(TARGET)
 
 install-deps:

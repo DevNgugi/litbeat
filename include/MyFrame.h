@@ -3,10 +3,11 @@
 
 #include <wx/wx.h>
 #include "AudioHandler.h" // Include the new header
-
+#include "HTTPClient.h"
 
 class MyFrame : public wxFrame {
 public:
+
     MyFrame(const wxString& title);
 
 private:
@@ -14,13 +15,18 @@ private:
     void OnSubmit(wxCommandEvent& event);
 
     void OnStartAudio(wxCommandEvent& event);
-    void OnStopAudio(wxCommandEvent& event);
-    AudioHandler audioHandler; // Add the AudioHandler instance
+
+    AudioHandler audioHandler;
+    HTTPClient client;
+
 
     wxTextCtrl *textCtrl;
     wxCheckBox *checkBox;
 
-    wxDECLARE_EVENT_TABLE();
+
+    //define constant IDS for buttons
+    static const int ID_API_CALL_BUTTON = 1002;
+    static const int ID_START_AUDIO_BUTTON = 1002;
 };
 
 #endif // MYFRAME_H
