@@ -31,3 +31,8 @@
 *.out
 lib
 *.app
+
+
+build
+
+.vscode/

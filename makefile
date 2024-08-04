@@ -1,12 +1,24 @@
-EXEC = litbeat
+CXX = g++
+CXXFLAGS = `wx-config --cxxflags`
+LDFLAGS = `wx-config --libs`
+CLIB = -I./lib/portaudio/include ./lib/portaudio/lib/.libs/libportaudio.a -lrt -lasound -ljack -pthread -lcurl
 
-CLIB = -I./lib/portaudio/include ./lib/portaudio/lib/.libs/libportaudio.a -lrt -lasound -ljack -pthread
+SRC = src/main.cpp src/MyApp.cpp src/MyFrame.cpp src/AudioHandler.cpp src/HTTPClient.cpp
 
-$(EXEC): main.cpp
-	g++ -o $@ $^ $(CLIB)
+INCLUDE = -I./include
 
-dev: $(EXEC)
-	./$(EXEC) 2>/dev/null
+TARGET = build/litbeat
+
+$(TARGET): $(SRC)
+	
+	@mkdir -p build
+	rm -f /$(TARGET)
+	$(CXX) $(CXXFLAGS) $(INCLUDE) -o $(TARGET) $(SRC) $(LDFLAGS) $(CLIB)
+
+dev: $(TARGET)
+	@mkdir -p build
+	rm -f /$(TARGET)
+	./$(TARGET)
 
 install-deps:
 	mkdir -p lib 
@@ -22,6 +34,6 @@ uninstall-deps:
 .PHONY: uninstall-deps
 
 clean:
-	rm -f $(EXEC)
+	rm -f build/$(TARGET)
 
 .PHONY: clean
